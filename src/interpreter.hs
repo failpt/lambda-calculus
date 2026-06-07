@@ -20,7 +20,7 @@ eval v (Var name) = case lookup name v of
         Nothing -> Var name
 eval v (Abs arg body) = Abs arg body
 eval v (App t1 t2) = case eval v t1 of
-        Abs arg body -> reduce arg body t2
+        Abs arg body -> eval v $ reduce arg body t2
         term -> App term $ eval v t2
     where
         reduce :: String -> Term -> Term -> Term
@@ -92,7 +92,7 @@ runLine venv line =
 repl :: Venv -> IO ()
 repl venv = do
     line <- getLine
-    if line == "q:" then return ()
+    if line == ":q" then return ()
     else do
         newVenv <- runLine venv line
         repl newVenv
