@@ -1,6 +1,8 @@
 import Control.Monad (guard, foldM)
 import Data.Char (isAlpha, isAlphaNum)
 import System.Environment (getArgs)
+import GHC.IO.Handle (hFlush)
+import GHC.IO.Handle.FD (stdout)
 
 data Term = Var String 
     | Abs String Term
@@ -91,6 +93,8 @@ runLine venv line =
 
 repl :: Venv -> IO ()
 repl venv = do
+    putStr "LC> "
+    hFlush stdout
     line <- getLine
     if line == ":q" then return ()
     else do
