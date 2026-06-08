@@ -1,4 +1,15 @@
-# Lazy evaluation Lambda calculus interpreter
+# Lazy evaluation $\lambda$-calculus interpreter
+Fully implemented in Haskell.
+## Usage 
+
+## Syntax
+- `\` for $\lambda$ followed by the input, `.` and the function body.
+- `\x. \y. \z. body` can be written as `\x y z. body`, input arguments must be separated by spaces.
+- With the exception of the outer expression, all functions as well as function applications treated as input arguments must be wrapped in parentheses (i.e. `\f. (\x. f (x x)) (\x. f (x x))`, not `\f. (\x. f (x x)) \x. f (x x)`).
+- Expressions can be separated by `,` or `\n`.
+- Expressions are either function calls or declarations, input files must only contain the latter.
+- To evaluate a function in a REPL your line must end with its call (precceeded by definitions or nothing).
+## Examples
 ```
 ./runlc churchbools.lc 
 lc> and true false
