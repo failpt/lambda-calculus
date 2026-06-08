@@ -10,14 +10,15 @@ First, [instal Haskell](https://www.haskell.org/ghcup/install/). Then, from the 
 You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [file]` on Windows. To **exit** the REPL type `:q`.
 
 ## Syntax
-- `\` for $\lambda$ followed by the input, `.` and the function body.
+- A lambda function is denoted with `\` (for $\lambda$) followed by the input, `.` and the function body.
+- Variable names can contain letters and/or numbers.
 - `\x. \y. \z. body` can be written as `\x y z. body`, input arguments must be separated with spaces.
 - All functions as well as function applications treated as input arguments must be wrapped in parentheses (i.e. `\f. (\x. f (x x)) (\x. f (x x))`, not `\f. (\x. f (x x)) \x. f (x x)`).
 - Expressions can contain function calls or assignments, input files must only contain the latter. Expressions can be separated by `,` or `\n`, but a call cannot precede `,`.
 - (Inline) Comments must start with `%`.
 
 ## Examples
-All the unspecified functions are defined in `src/minilib.lc`. Further detail is available on [wiki](https://en.wikipedia.org/wiki/Church_encoding).
+All the unspecified functions are defined in `src/minilib.lc`. Further details are available on [wiki](https://en.wikipedia.org/wiki/Church_encoding).
 1. Church pairs
 ```
 % ./runlc 
