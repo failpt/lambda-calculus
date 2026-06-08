@@ -16,11 +16,23 @@ eval :: Venv -> Term -> Term
 eval v (Var name) = case lookup name v of
         Just t -> eval v t
         Nothing -> Var name
-eval v (Abs arg body) = Abs arg body
+eval v (Abs arg body) = case body' of 
+    App f (Var x) | x == arg && not (isFree x f) -> f
+    _ -> Abs arg body'
+    where body' = eval (filter (\(x, _) -> x /= arg) v) body
+
 eval v (App t1 t2) = case eval v t1 of
         Abs arg body -> eval v $ reduce arg body t2
         term -> App term $ eval v t2
         
+isFree :: String -> Term -> Bool
+-- | Returns True if a variable is free in a term, otherwise returns False.
+isFree x (Var name) = x == name 
+isFree x (Abs arg body)
+    | x == arg = False
+    | otherwise = isFree x body
+isFree x (App t1 t2) = isFree x t1 || isFree x t2
+
 reduce :: String -> Term -> Term -> Term
 -- | Substitudes an argument everywhere in a term with a different (input) term and returns the result.
 reduce arg (Var name) input

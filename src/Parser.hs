@@ -19,7 +19,7 @@ scan :: String -> [Token]
 scan [] = []
 scan (c : cs)
     | c == ' '  = scan cs
-    | isAlpha c = let (tail, rest) = span isAlphaNum cs in Name (c : tail) : scan rest
+    | isAlphaNum c = let (tail, rest) = span isAlphaNum cs in Name (c : tail) : scan rest
     | c == '\\' = Lam : scan cs
     | c == '.' = Dot : scan cs
     | c == '(' = LParen : scan cs
