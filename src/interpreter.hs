@@ -10,7 +10,7 @@ data Term = Var String
 
 instance Show Term where
     show (Var name) = name
-    show (Abs arg body) = "\\" ++ arg ++ "." ++ show body
+    show (Abs arg body) = "\\" ++ arg ++ ". " ++ show body
     show (App t1 t2) = "(" ++ show t1 ++ " " ++ show t2 ++ ")"
 
 type Venv = [(String, Term)]
@@ -38,6 +38,14 @@ eval v (App t1 t2) = case eval v t1 of
 data Token = Lam | Dot | LParen | RParen | Eq | Name String 
     deriving Eq
 
+instance Show Token where 
+    show Lam = "\\"
+    show Dot = "."
+    show LParen = "("
+    show RParen = ")"
+    show Eq = "="
+    show (Name n) = n
+
 scan :: String -> [Token]
 -- | Scans (lexes) a line and stores the tokens.
 scan [] = []
@@ -62,14 +70,19 @@ parseTerm (Lam : rest) = (foldr Abs body args, rest'') where
         -- | Collects the arguments of a multi-argument lambda function.
         grabArgs (Name arg : Dot : rest) = ([arg], rest)
         grabArgs (Name arg : rest) = (arg : args, rest') where (args, rest') = grabArgs rest
-        grabArgs _ = error "Unexpected token."
+        grabArgs (t : _) = error ("Unexpected token: " ++ show t ++ ".")
+        grabArgs [] = error "Missing arguments."
 parseTerm tokens = leftRecurse f rest where (f, rest) = parseLeaf tokens
 
 parseLeaf :: [Token] -> (Term, [Token])
 -- | Parses a variable or a parenthesised expression.
 parseLeaf (Name var : rest) = (Var var, rest)
-parseLeaf (LParen : tail) = (term, rest) where (term, RParen : rest) = parseTerm tail
-parseLeaf _ = error "Unexpected token."
+parseLeaf (LParen : rest) = case rest' of 
+        (RParen : rest'') -> (term, rest'')
+        _ -> error "Missing closing parenthesis."
+        where (term, rest') = parseTerm rest
+parseLeaf (t : _) = error ("Unexpected token: " ++ show t ++ ".")
+parseLeaf _ = error "Missing variables."
 
 leftRecurse :: Term -> [Token] -> (Term, [Token])
 -- | Left-associatively parses function applications.
@@ -96,7 +109,7 @@ loadLine venv line isAssignment = case scan line of
         (Name n : Eq : rest) -> return ((n, fst $ parseTerm rest) : venv)
         [] -> return venv
         tokens 
-            | isAssignment -> error "syntax error"
+            | isAssignment -> error "invalid assignment."
             | otherwise -> print (eval venv (fst $ parseTerm tokens)) >> return venv
 
 repl :: Venv -> IO ()
