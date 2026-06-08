@@ -63,43 +63,66 @@ parseTerm (Lam : rest) = (foldr Abs body args, rest'') where
         grabArgs (Name arg : Dot : rest) = ([arg], rest)
         grabArgs (Name arg : rest) = (arg : args, rest') where (args, rest') = grabArgs rest
         grabArgs _ = error "Unexpected token."
-parseTerm tokens = let (f, rest) = parseLeaf tokens in leftRecurse f rest
+parseTerm tokens = leftRecurse f rest where (f, rest) = parseLeaf tokens
 
 parseLeaf :: [Token] -> (Term, [Token])
 -- | Parses a variable or a parenthesised expression.
 parseLeaf (Name var : rest) = (Var var, rest)
-parseLeaf (LParen : tail) = let (term, RParen : rest) = parseTerm tail in (term, rest)
+parseLeaf (LParen : tail) = (term, rest) where (term, RParen : rest) = parseTerm tail
 parseLeaf _ = error "Unexpected token."
 
 leftRecurse :: Term -> [Token] -> (Term, [Token])
--- | Parses function applications.
+-- | Left-associatively parses function applications.
 leftRecurse t1 (Name n : rest) = leftRecurse (App t1 t2) rest' where 
     (t2, rest') = parseLeaf (Name n : rest)
 leftRecurse t1 (LParen : rest) = leftRecurse (App t1 t2) rest' where 
     (t2, rest') = parseLeaf (LParen : rest) 
 leftRecurse t1 rest = (t1, rest)
 
-runLine :: Venv -> String -> IO Venv
-runLine venv line = 
-    case scan line of
-        [] -> return venv
+split' :: String -> Char -> [String]
+-- | Splits a string by a specified delimiter and newline carachter.
+split' "" _ = []
+split' str delim = line : split' (drop 1 rest) delim where (line, rest) = span (\c -> c /= delim && c /= '\n') str
+
+unsnoc :: [a] -> Maybe ([a], a)
+-- | https://github.com/haskell/core-libraries-committee/issues/165
+unsnoc = foldr (\x -> Just . maybe ([], x) (\(~(a, b)) -> (x : a, b))) Nothing
+
+loadLine :: Venv -> String -> IO Venv
+-- | Reads a variable assignment and saves it to the virtual environment. If empty, does nothing.
+loadLine venv line = case scan line of
         (Name n : Eq : rest) -> do
             let (term, _) = parseTerm rest
             return ((n, term) : venv)
+        [] -> return venv
+        _ -> error "syntax error"
+
+runLine :: Venv -> String -> IO Venv
+-- | Either reads and runs a command or reads and saves a variable assignment to the virtual environment.
+runLine venv line = case scan line of
+        (Name n : Eq : rest) -> do
+            let (term, _) = parseTerm rest
+            return ((n, term) : venv)
+        [] -> return venv
         tokens -> do
             let (term, _) = parseTerm tokens
             print (eval venv term)
             return venv
 
 repl :: Venv -> IO ()
+-- | Starts a lambda calculus read-eval-print loop.
 repl venv = do
-    putStr "LC> "
+    putStr "lc> "
     hFlush stdout
     line <- getLine
     if line == ":q" then return ()
     else do
-        newVenv <- runLine venv line
-        repl newVenv
+        let (heads, last) = case unsnoc (split' line ',') of 
+                (Just pair) -> pair 
+                Nothing -> ([], [])
+        venv' <- foldM loadLine venv heads
+        venv'' <- runLine venv' last
+        repl venv''
 
 main :: IO ()
 main = do
@@ -107,7 +130,7 @@ main = do
     case args of
         [file] -> do
             content <- readFile file
-            finalEnv <- foldM runLine [] (lines content)
-            repl finalEnv
+            venv <- foldM loadLine [] (split' content ',')
+            repl venv
         [] -> repl []
-        _  -> putStrLn "Unknown arguments. Usage: runlc [file]"
+        _  -> putStrLn "usage: runlc [file]"
