@@ -13,7 +13,7 @@ You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [
 - `\` for $\lambda$ followed by the input, `.` and the function body.
 - `\x. \y. \z. body` can be written as `\x y z. body`, input arguments must be separated with spaces.
 - All functions as well as function applications treated as input arguments must be wrapped in parentheses (i.e. `\f. (\x. f (x x)) (\x. f (x x))`, not `\f. (\x. f (x x)) \x. f (x x)`).
-- Expressions can be function calls or assignments, input files must only contain the latter. Expressions can be separated by `,` or `\n`, but a call cannot precede `,`.
+- Expressions can contain function calls or assignments, input files must only contain the latter. Expressions can be separated by `,` or `\n`, but a call cannot precede `,`.
 - (Inline) Comments must start with `%`.
 
 ## Examples
