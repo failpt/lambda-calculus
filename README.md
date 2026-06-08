@@ -18,7 +18,7 @@ You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [
 - Expressions are either function calls or assignments, input files must only contain the latter.
 - To evaluate a function in a REPL your line must end with its call (precceeded by assignments or nothing).
 ## Examples
-The used functions are defined in `src/*.lc` and [here](https://en.wikipedia.org/wiki/Church_encoding).
+The unspecified functions are defined in `src/*.lc` and [here](https://en.wikipedia.org/wiki/Church_encoding).
 1. Church pairs
 ```
 % ./runlc 
