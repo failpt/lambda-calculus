@@ -39,10 +39,3 @@ fold = \g z. Y (\r l. l z (\a d. g a (r d)))
 Append = fold Cons
 Map = \f. fold (\h. Cons (f h)) NIL
 Map2 = \f. Y (\r p q. p NIL (\a d. q NIL (\b g. Cons (f a b) (r d g))))
-
-% Church lists
-rfold = \f a. Y (\r. \l. l (\h t d. f (r t) h) a)
-len = fold (\a h. succ a) 0
-
-La = Cons 2 (Cons 4 (Cons 3 (Cons 5 NIL))), Lb = Map (minus 6) La
-L1 = Cons 1 (Cons 3 (Cons 2 NIL)), L2 = Map (plus 1) L1
