@@ -1,10 +1,8 @@
 true = \a. \b. a
 false = \a. \b. b
 
-if = \p a b. p a b
 and = \p q. p q p
 or = \p q. p p q
 not = \p. p false true
 xor = \p q. p (not q) q
 nand = \p q. not (and p q)
-implies = \p q. or (not p) q
