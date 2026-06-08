@@ -66,4 +66,16 @@ lc> mult 2 3
 lc> 6
 \f. \x. (f (f (f (f (f (f x))))))
 ```
-
+4. Scott lists
+```
+% ./runlc scottlists.lc
+lc> list = Cons a (Cons b (Cons c (Cons d NIL)))
+lc> Head list
+a
+lc> isEmpty list
+\a. \b. b
+lc> list
+\n. \c. ((c a) \n. \c. ((c b) \n. \c. ((c c) \n. \c. ((c \n. \c. n) \n. \c. n))))
+lc> Cons (Head list) (Tail list)
+\n. \c. ((c a) \n. \c. ((c b) \n. \c. ((c c) \n. \c. ((c \n. \c. n) \n. \c. n))))
+```
