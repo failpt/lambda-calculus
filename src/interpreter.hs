@@ -1,8 +1,8 @@
 import Control.Monad (guard, foldM)
 import Data.Char (isAlpha, isAlphaNum)
 import System.Environment (getArgs)
-import GHC.IO.Handle (hFlush)
-import GHC.IO.Handle.FD (stdout)
+import GHC.IO.Handle (hFlush, hSetBuffering, BufferMode (LineBuffering))
+import GHC.IO.Handle.FD (stdout, stdin)
 
 data Term = Var String 
     | Abs String Term
@@ -126,6 +126,7 @@ repl venv = do
 
 main :: IO ()
 main = do
+    hSetBuffering stdin LineBuffering
     args <- getArgs
     case args of
         [file] -> do
