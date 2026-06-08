@@ -2,7 +2,7 @@ module Main where
 
 import AST
 import Parser
-import Control.Monad (guard, foldM)
+import Control.Monad (foldM)
 import System.Environment (getArgs)
 import GHC.IO.Handle (hFlush, hSetBuffering, BufferMode (LineBuffering))
 import GHC.IO.Handle.FD (stdout, stdin)
@@ -52,4 +52,3 @@ main = do
             repl venv
         [] -> repl []
         _  -> putStrLn "Usage: ./runlc [file]"
-

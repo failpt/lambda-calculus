@@ -1,10 +1,9 @@
 module Parser where
 
 import AST
-import Data.Char (isAlpha, isAlphaNum)
+import Data.Char (isAlphaNum)
 
-data Token = Lam | Dot | LParen | RParen | Eq | Name String 
-    deriving Eq
+data Token = Lam | Dot | LParen | RParen | Eq | Name String
 
 instance Show Token where 
     show Lam = "\\"
