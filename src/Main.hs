@@ -24,7 +24,7 @@ loadLine venv line isAssignment = case scan line of
         (Name n : Eq : rest) -> return ((n, fst $ parseTerm rest) : venv)
         [] -> return venv
         tokens 
-            | isAssignment -> error "invalid assignment."
+            | isAssignment -> error "Invalid assignment."
             | otherwise -> print (eval venv (fst $ parseTerm tokens)) >> return venv
 
 repl :: Venv -> IO ()
@@ -51,4 +51,4 @@ main = do
             venv <- foldM (\v l -> loadLine v l True) [] (split' code ',')
             repl venv
         [] -> repl []
-        _  -> putStrLn "usage: runlc [file]"
+        _  -> putStrLn "Usage: runlc [file]"
