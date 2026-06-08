@@ -1,3 +1,4 @@
+# Lazy evaluation Lambda calculus interpreter
 ```
 ./runlc churchbools.lc 
 lc> and true false
