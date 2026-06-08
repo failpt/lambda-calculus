@@ -1,8 +1,0 @@
-true = \a. \b. a
-false = \a. \b. b
-
-and = \p q. p q p
-or = \p q. p p q
-not = \p. p false true
-xor = \p q. p (not q) q
-nand = \p q. not (and p q)

@@ -12,14 +12,11 @@ instance Show Term where
 type Venv = [(String, Term)]
 
 eval :: Venv -> Term -> Term 
--- | Evaluates (reduces) a term and returns the result.
+-- | Evaluates a term and returns the result.
 eval v (Var name) = case lookup name v of
         Just t -> eval v t
         Nothing -> Var name
-eval v (Abs arg body) = case body' of 
-    App f (Var x) | x == arg && not (isFree x f) -> f
-    _ -> Abs arg body'
-    where body' = eval (filter (\(x, _) -> x /= arg) v) body
+eval v (Abs arg body) = Abs arg body
 eval v (App t1 t2) = case eval v t1 of
         Abs arg body -> eval v $ reduce arg body t2
         term -> App term $ eval v t2
@@ -41,3 +38,12 @@ reduce arg1 (Abs arg2 body) input
     | arg1 == arg2 = Abs arg2 body
     | otherwise = Abs arg2 $ reduce arg1 body input
 reduce arg (App t1 t2) input = App (reduce arg t1 input) (reduce arg t2 input)
+
+eta :: Venv -> Term -> Term
+-- | Eta reduces a term after evaluation.
+eta v t = case eval v t of
+    Var name -> Var name 
+    App t1 t2 -> App (eta v t1) (eta v t2)
+    Abs arg body -> case eta (filter (\(x, _) -> x /= arg) v) body of
+        App f (Var x) | x == arg && not (isFree x f) -> f
+        body' -> Abs arg body'

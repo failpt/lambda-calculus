@@ -25,7 +25,7 @@ loadLine venv line isAssignment = case scan line of
         [] -> return venv
         tokens 
             | isAssignment -> error "Invalid assignment."
-            | otherwise -> print (eval venv (fst $ parseTerm tokens)) >> return venv
+            | otherwise -> print (eta venv $ fst $ parseTerm tokens) >> return venv
 
 repl :: Venv -> IO ()
 -- | Starts a lambda calculus read-eval-print loop.
@@ -52,3 +52,4 @@ main = do
             repl venv
         [] -> repl []
         _  -> putStrLn "Usage: ./runlc [file]"
+
