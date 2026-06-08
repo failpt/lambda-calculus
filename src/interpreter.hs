@@ -88,40 +88,29 @@ unsnoc :: [a] -> Maybe ([a], a)
 -- | https://github.com/haskell/core-libraries-committee/issues/165
 unsnoc = foldr (\x -> Just . maybe ([], x) (\(~(a, b)) -> (x : a, b))) Nothing
 
-loadLine :: Venv -> String -> IO Venv
--- | Reads a variable assignment and saves it to the virtual environment. If empty, does nothing.
-loadLine venv line = case scan line of
-        (Name n : Eq : rest) -> do
-            let (term, _) = parseTerm rest
-            return ((n, term) : venv)
+loadLine :: Venv -> String -> Bool -> IO Venv
+-- | Reads a variable assignment and saves it to the virtual environment if the third 
+--  input is False; throws an error if the second input is not an assignment. 
+--  If the third input is True, may also read and run a command.
+loadLine venv line isAssignment = case scan line of
+        (Name n : Eq : rest) -> return ((n, fst $ parseTerm rest) : venv)
         [] -> return venv
-        _ -> error "syntax error"
-
-runLine :: Venv -> String -> IO Venv
--- | Either reads and runs a command or reads and saves a variable assignment to the virtual environment.
-runLine venv line = case scan line of
-        (Name n : Eq : rest) -> do
-            let (term, _) = parseTerm rest
-            return ((n, term) : venv)
-        [] -> return venv
-        tokens -> do
-            let (term, _) = parseTerm tokens
-            print (eval venv term)
-            return venv
+        tokens 
+            | isAssignment -> error "syntax error"
+            | otherwise -> print (eval venv (fst $ parseTerm tokens)) >> return venv
 
 repl :: Venv -> IO ()
 -- | Starts a lambda calculus read-eval-print loop.
 repl venv = do
-    putStr "lc> "
-    hFlush stdout
+    putStr "lc> " >> hFlush stdout
     line <- getLine
     if line == ":q" then return ()
     else do
         let (heads, last) = case unsnoc (split' line ',') of 
                 (Just pair) -> pair 
                 Nothing -> ([], [])
-        venv' <- foldM loadLine venv heads
-        venv'' <- runLine venv' last
+        venv' <- foldM (\v l -> loadLine v l True) venv heads
+        venv'' <- loadLine venv' last False
         repl venv''
 
 main :: IO ()
@@ -130,8 +119,8 @@ main = do
     args <- getArgs
     case args of
         [file] -> do
-            content <- readFile file
-            venv <- foldM loadLine [] (split' content ',')
+            code <- readFile file
+            venv <- foldM (\v l -> loadLine v l True) [] (split' code ',')
             repl venv
         [] -> repl []
         _  -> putStrLn "usage: runlc [file]"
