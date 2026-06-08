@@ -51,4 +51,4 @@ main = do
             venv <- foldM (\v l -> loadLine v l True) [] (split' code ',')
             repl venv
         [] -> repl []
-        _  -> putStrLn "Usage: runlc [file]"
+        _  -> putStrLn "Usage: ./runlc [file]"
