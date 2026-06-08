@@ -21,7 +21,7 @@ eval v (Abs arg body) = case body' of
     _ -> Abs arg body'
     where body' = eval (filter (\(x, _) -> x /= arg) v) body
 eval v (App t1 t2) = case eval v t1 of
-        Abs arg body -> eval v $ reduce arg body t2
+        Abs arg body -> eval v $ reduce arg body $ eval v t2
         term -> App term $ eval v t2
         
 isFree :: String -> Term -> Bool
