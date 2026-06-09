@@ -30,12 +30,13 @@ isFree x (Abs arg body)
 isFree x (App t1 t2) = isFree x t1 || isFree x t2
 
 reduce :: String -> Term -> Term -> Term
--- | Substitudes an argument everywhere in a term with a different (input) term and returns the result.
+-- | Substitudes a variable everywhere in a term with a different (input) term and returns the result.
 reduce arg (Var name) input
     | arg == name = input
     | otherwise = Var name
 reduce arg1 (Abs arg2 body) input
     | arg1 == arg2 = Abs arg2 body
+    | isFree arg2 input = let arg2' = arg2 ++ "'" in Abs arg2' $ reduce arg1 (reduce arg2 body $ Var arg2') input  
     | otherwise = Abs arg2 $ reduce arg1 body input
 reduce arg (App t1 t2) input = App (reduce arg t1 input) (reduce arg t2 input)
 
