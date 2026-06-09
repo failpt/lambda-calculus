@@ -50,6 +50,13 @@ lc> nand false false
 ```
 lc> IsZero 2
 \a. \b. b
+lc> LEQ 3 4
+\a. \b. a
+lc> EQ 3 4
+\a. \b. b
+lc>
+lc> 2
+\f. \x. (f (f x))
 lc> minus 6 4
 \f. \x. (f (f x))
 lc> mult 2 1
@@ -85,8 +92,6 @@ lc> Cons 2 (Cons 1 NIL)
 *(cons = pair)*
 ```
 lc> L123 = cons 1 (cons 2 (cons 3 nil)), L456 = cons 4 (cons 5 (cons 6 nil))
-lc> LEQ = \m n. IsZero (minus m n), EQ = \m n. and (LEQ m n) (LEQ n m), LEQ 3 4
-\a. \b. a
 lc> EQ (length L123) (length L456)
 \a. \b. a
 lc>
@@ -99,6 +104,11 @@ lc> drop 2 L123
 \z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
 lc> cons 3 nil
 \z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
+lc>
+lc> drop-while (LEQ 5) (reverse L456)
+\z. ((z \f. \x. (f (f (f (f x))))) \a. \b. b)
+lc> cons 4 nil
+\z. ((z \f. \x. (f (f (f (f x))))) \a. \b. b)
 lc>
 lc> drop-last 4 (concat L123 L456)
 \z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
@@ -142,4 +152,3 @@ lc> lfold plus 0 L210
 lc> rfold plus 0 L210
 \f. \x. (f (f (f x)))
 ```
-
