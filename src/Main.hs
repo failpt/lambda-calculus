@@ -52,7 +52,7 @@ main = do
     case args of
         [file] -> do
             code <- readFile file
-            venv <- foldM (\v l -> loadLine v l True) [] (concat $ map prelex $ split' code '\n')
+            venv <- foldM (\v l -> loadLine v l True) [] (concatMap prelex $ lines code)
             repl venv
         [] -> repl []
         _  -> putStrLn "Usage: ./runlc [file]"
