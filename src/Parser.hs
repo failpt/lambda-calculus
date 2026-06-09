@@ -18,7 +18,7 @@ scan :: String -> [Token]
 scan [] = []
 scan (c : cs)
     | c == ' '  = scan cs
-    | isAlphaNum c = let (tail, rest) = span isAlphaNum cs in Name (c : tail) : scan rest
+    | isName c = let (tail, rest) = span isName cs in Name (c : tail) : scan rest
     | c == '\\' = Lam : scan cs
     | c == '.' = Dot : scan cs
     | c == '(' = LParen : scan cs
@@ -26,6 +26,7 @@ scan (c : cs)
     | c == '=' = Eq : scan cs
     | c == '%' = []
     | otherwise = error ("Unknown input symbol: " ++ c : ".")
+    where isName c = isAlphaNum c || c == '-' || c == '_'
 
 parseTerm :: [Token] -> (Term, [Token])
 -- | Parses a lambda calculus term.
