@@ -1,6 +1,6 @@
 module Parser where
 
-import AST
+import Evaluator
 import Data.Char (isAlphaNum)
 
 data Token = Lam | Dot | LParen | RParen | Eq | Name String

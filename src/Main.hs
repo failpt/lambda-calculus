@@ -1,6 +1,6 @@
 module Main where
 
-import AST
+import Evaluator
 import Parser
 import Control.Monad (foldM)
 import System.Environment (getArgs)
@@ -8,9 +8,13 @@ import GHC.IO.Handle (hFlush, hSetBuffering, BufferMode (LineBuffering))
 import GHC.IO.Handle.FD (stdout, stdin)
 
 split' :: String -> Char -> [String]
--- | Splits a string by a specified delimiter and newline carachter.
+-- | Splits a string by the specified delimiter.
 split' "" _ = []
-split' str delim = line : split' (drop 1 rest) delim where (line, rest) = span (\c -> c /= delim && c /= '\n') str
+split' str delim = line : split' (drop 1 rest) delim where (line, rest) = span (/= delim) str
+
+prelex :: String -> [String]
+-- | Splits a line into strings ready to be lexed (scanned, tokenized)
+prelex line = (split' (takeWhile (/= '%') line) ',')
 
 unsnoc :: [a] -> Maybe ([a], a)
 -- | https://github.com/haskell/core-libraries-committee/issues/165
@@ -34,7 +38,7 @@ repl venv = do
     line <- getLine
     if line == ":q" then return ()
     else do
-        let (heads, last) = case unsnoc (split' line ',') of 
+        let (heads, last) = case unsnoc (prelex line) of 
                 (Just pair) -> pair 
                 Nothing -> ([], [])
         venv' <- foldM (\v l -> loadLine v l True) venv heads
@@ -48,7 +52,8 @@ main = do
     case args of
         [file] -> do
             code <- readFile file
-            venv <- foldM (\v l -> loadLine v l True) [] (split' code ',')
+            venv <- foldM (\v l -> loadLine v l True) [] (concat $ map prelex $ split' code '\n')
             repl venv
         [] -> repl []
         _  -> putStrLn "Usage: ./runlc [file]"
+

@@ -1,4 +1,4 @@
-module AST where
+module Evaluator where
 
 data Term = Var String 
     | Abs String Term
