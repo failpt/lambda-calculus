@@ -135,5 +135,11 @@ lc> replace-at 1 0 (remove-at 2 L123)
 \z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
 lc> cons 1 (cons 0 nil)
 \z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
+lc>
+lc> L210 = map (minus 3) L123
+lc> lfold plus 0 L210
+\f. \x. (f (f (f x)))
+lc> rfold plus 0 L210
+\f. \x. (f (f (f x)))
 ```
 
