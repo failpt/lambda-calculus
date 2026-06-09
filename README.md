@@ -27,13 +27,7 @@ y
 ```
 
 ## minilib.lc
-Defines Pairs, Booleans, numbers 0-9, lists and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). 
-
-Run
-```
-$ ./runlc minilib.lc
-```
-and the code below to get familiar with the library.
+Defines Pairs, Booleans, numbers 0-9, lists and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). The code below contains extensive usage examples.
 
 ### Booleans
 ```
