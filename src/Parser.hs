@@ -34,27 +34,26 @@ parseTerm (Lam : rest) = (foldr Abs body args, rest'') where
         (body, rest'') = parseTerm rest'
 
         grabArgs :: [Token] -> ([String], [Token])
-        -- | Collects the arguments of a multi-argument lambda function.
         grabArgs (Name arg : Dot : rest) = ([arg], rest)
         grabArgs (Name arg : rest) = (arg : args, rest') where (args, rest') = grabArgs rest
         grabArgs (t : _) = error ("Unexpected token: " ++ show t ++ ".")
-        grabArgs [] = error "Missing arguments."
-parseTerm tokens = leftRecurse f rest where (f, rest) = parseLeaf tokens
+        grabArgs _ = error "Missing arguments."
+parseTerm tokens = leftRecurse f rest where (f, rest) = parseNode tokens
 
-parseLeaf :: [Token] -> (Term, [Token])
+parseNode :: [Token] -> (Term, [Token])
 -- | Parses a variable or a parenthesised expression.
-parseLeaf (Name var : rest) = (Var var, rest)
-parseLeaf (LParen : rest) = case rest' of 
+parseNode (Name var : rest) = (Var var, rest)
+parseNode (LParen : rest) = case rest' of 
         (RParen : rest'') -> (term, rest'')
         _ -> error "Missing closing parenthesis."
         where (term, rest') = parseTerm rest
-parseLeaf (t : _) = error ("Unexpected token: " ++ show t ++ ".")
-parseLeaf _ = error "Missing variables."
+parseNode (t : _) = error ("Unexpected token: " ++ show t ++ ".")
+parseNode _ = error "Missing variables."
 
 leftRecurse :: Term -> [Token] -> (Term, [Token])
 -- | Left-associatively parses function applications.
 leftRecurse t1 (Name n : rest) = leftRecurse (App t1 t2) rest' where 
-    (t2, rest') = parseLeaf (Name n : rest)
+    (t2, rest') = parseNode (Name n : rest)
 leftRecurse t1 (LParen : rest) = leftRecurse (App t1 t2) rest' where 
-    (t2, rest') = parseLeaf (LParen : rest) 
+    (t2, rest') = parseNode (LParen : rest) 
 leftRecurse t1 rest = (t1, rest)
