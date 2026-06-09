@@ -27,7 +27,7 @@ y
 ```
 
 ## minilib.lc
-Defines pairs, Booleans, numbers 0-9, two list representations, and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). The code below contains extensive usage examples.
+Defines pairs, Booleans, numbers 0-9, two list representations, and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) *(thank the Turing-completeness of lambda calculus)*. The code below contains extensive usage examples.
 
 ### Booleans
 ```
