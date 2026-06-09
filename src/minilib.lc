@@ -63,7 +63,7 @@ length = lfold (\a h. succ a) 0
 
 map = \f. rfold (\a h. cons (f h) a) nil
 filter = \p. rfold (\a h. p h (cons h a) a) nil
-reverse = fold (\a h. cons h a) nil
+reverse = lfold (\a h. cons h a) nil
 concat = \l g. rfold (\a h. cons h a) g l
 conj = \l v. concat l (cons v nil)
 

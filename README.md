@@ -27,7 +27,7 @@ y
 ```
 
 ## minilib.lc
-Defines Pairs, Booleans, numbers 0-9, lists and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). The code below contains extensive usage examples.
+Defines pairs, Booleans, numbers 0-9, lists, and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). The code below contains extensive usage examples.
 
 ### Booleans
 ```
@@ -135,5 +135,11 @@ lc> replace-at 1 0 (remove-at 2 L123)
 \z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
 lc> cons 1 (cons 0 nil)
 \z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
+lc>
+lc> L210 = map (minus 3) L123
+lc> lfold plus 0 L210
+\f. \x. (f (f (f x)))
+lc> rfold plus 0 L210
+\f. \x. (f (f (f x)))
 ```
 
