@@ -1,7 +1,7 @@
 # Lazy evaluation $\lambda$-calculus interpreter
 The project is fully written in Haskell. Expressions are Eta-reduced after evaluation.
 ## Usage 
-First, [instal Haskell](https://www.haskell.org/ghcup/install/). Then, from the `src/` directory compile an executable with
+First, [install Haskell](https://www.haskell.org/ghcup/install/). Then, from the `src/` directory compile an executable with
 ```
 % ghc --make Main.hs -o runlc
 ```
