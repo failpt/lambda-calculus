@@ -1,3 +1,8 @@
+% Church Pairs
+pair = \x y. \z. z x y
+first = \p. p (\x y. x)
+second = \p. p (\x y. y)
+
 % Church Booleans
 true = \a. \b. a
 false = \a. \b. b
@@ -20,6 +25,9 @@ Y = \f. (\x. f (x x)) (\x. f (x x)) % Y-combinator
 6 = \f. \x. f (f (f (f (f (f x)))))
 7 = \f. \x. f (f (f (f (f (f (f x))))))
 8 = \f. \x. f (f (f (f (f (f (f (f x)))))))
+9 = \f. \x. f (f (f (f (f (f (f (f (f x))))))))
+
+IsZero = \n. n (\x. false) true
 
 % Arithmetic operations
 plus = \m n. \f x. m f (n f x)
@@ -39,3 +47,39 @@ fold = \g z. Y (\r l. l z (\a d. g a (r d)))
 Append = fold Cons
 Map = \f. fold (\h. Cons (f h)) NIL
 Map2 = \f. Y (\r p q. p NIL (\a d. q NIL (\b g. Cons (f a b) (r d g))))
+
+% List representation through one pair as a list node
+cons = pair
+head = \l. l (\h t d. h) nil
+tail = \l. l (\h t d. t) nil
+nil = false
+isnil = \l. l (\h t d. false) true
+
+lfold = \f. Y (\r a l. l (\h t d. r (f a h) t) a)
+rfold = \f a. Y (\r l. l (\h t d. f (r t) h) a)
+length = lfold (\a h. succ a) 0
+
+map = \f. rfold (\a h. cons (f h) a) nil
+filter = \p. rfold (\a h. p h (cons h a) a) nil
+reverse = fold (\a h. cons h a) nil
+concat = \l g. rfold (\a h. cons h a) g l
+conj = \l v. concat l (cons v nil)
+
+drop = \n. n tail
+drop-last = \n l. IsZero n l (second ((Y (\r lr. lr (\h t d. r t (\na la. IsZero na (pair 0 (cons h la)) (pair (pred na) nil))) (pair n nil))) l))
+drop-while = \p. Y (\r l. l (\h t d. p h (r t) l) nil),
+take = Y (\r n l. l (\h t d. IsZero n nil (cons h (r (pred n) t))) nil)
+take-last = \n l. IsZero n l (second ((Y (\r lr. lr (\h t d. r t (\na la. IsZero na (pair 0 la) (pair (pred na) lr))) (pair n nil))) l))
+take-while = \p. Y (\r l. l (\h t d. p h (cons h (r t)) nil) nil)
+
+all = Y (\r p l. l (\h t d. p h (r p t) false) true)
+any = Y (\r p l. l (\h t d. p h true (r p t)) false)
+element-at = \n l. head (drop n l)
+insert-at = \n v l. concat (take n l) (cons v (drop n l))
+remove-at = \n l. concat (take n l) (drop (succ n) l)
+replace-at = \n v l. concat (take n l) (cons v (drop (succ n) l))
+index-of = \p. (Y (\r n l. l (\h t d. p h n (r (succ n) t)) 0)) 1
+last-index-of = \p. (Y (\r n l. l (\h t d. (\i. IsZero i (p h n 0) i) (r (succ n) t)) 0)) 1
+range = \f z. (Y (\r s n. IsZero n nil (cons (s f z) (r (succ s) (pred n)))) 0)
+repeat = \v. Y (\r n. IsZero n nil (cons v (r (pred n))))
+zip = Y (\r l1 l2. l1 (\h1 t1 d1. l2 (\h2 t2 d2. cons (pair h1 h2) (r t1 t2)) nil) nil)

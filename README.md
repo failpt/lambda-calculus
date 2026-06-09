@@ -3,9 +3,9 @@ The project is fully written in Haskell. Expressions are Eta-reduced after evalu
 ## Usage 
 First, [install Haskell](https://www.haskell.org/ghcup/install/). Then, from the `src/` directory compile an executable with
 ```
-% ghc --make Main.hs -o runlc
+$ ghc --make Main.hs -o runlc
 ```
-*(runlc can be replaced with any desired name)*
+*(runlc can be replaced with any desired name)*.
 
 You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [file]` on Windows. To **exit** the REPL type `:q`.
 
@@ -17,20 +17,26 @@ You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [
 - Expressions can contain function calls or assignments, input files must only contain the latter. Expressions can be separated by `,` or `\n`, but a call cannot precede `,`.
 - (Inline) Comments must start with `%`.
 
-## Examples
-All the unspecified functions are defined in `src/minilib.lc`. Further details are available on [wiki](https://en.wikipedia.org/wiki/Church_encoding).
-1. Church pairs
+E.g.:
 ```
-% ./runlc 
-lc> pair = \x y. \z. z x y, first = \p. p (\x y. x), second = \p. p (\x y. y)
-lc> first (pair a b) % fooooo
+lc> pair = \x y. \z. z x y, first = \p. p (\x y. x), second = \p. p (\x y. y) % these are called Church pairs
+lc> first (pair a b)
 a
 lc> second (pair x y)
 y
 ```
-2. Church Booleans
+
+## minilib.lc
+Defines Pairs, Booleans, numbers 0-9, lists and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). 
+
+Run
 ```
-% ./runlc minilib.lc
+$ ./runlc minilib.lc
+```
+and the code below to get familiar with the library.
+
+### Booleans
+```
 lc> and true false
 \a. \b. b
 lc> false
@@ -46,9 +52,10 @@ lc> xor true true
 lc> nand false false
 \a. \b. a
 ```
-3. Church numerals
+### Church numerals
 ```
-% ./runlc minilib.lc 
+lc> IsZero 2
+\a. \b. b
 lc> minus 6 4
 \f. \x. (f (f x))
 lc> mult 2 1
@@ -61,9 +68,8 @@ lc> plus 3 1
 lc> div 8 2
 \f. \x. (f (f (f (f x))))
 ```
-4. Scott lists
+### Scott lists
 ```
-% ./runlc minilib.lc
 lc> La = Cons 2 (Cons 4 (Cons 3 (Cons 5 NIL))), Lb = Map (minus 6) La
 lc> Head (Tail Lb)
 \f. \x. (f (f x))
@@ -81,3 +87,59 @@ lc> Tail (Append (Cons 1 NIL) (Cons 3 (Cons 2 NIL)))
 lc> Cons 2 (Cons 1 NIL)
 \n. \c. ((c \f. \x. (f (f x))) \n. \c. ((c \f. f) \n. \c. n))
 ```
+### One-pair lists
+*(cons = pair)*
+```
+lc> L123 = cons 1 (cons 2 (cons 3 nil)), L456 = cons 4 (cons 5 (cons 6 nil))
+lc> LEQ = \m n. IsZero (minus m n), EQ = \m n. and (LEQ m n) (LEQ n m), LEQ 3 4
+\a. \b. a
+lc> EQ (length L123) (length L456)
+\a. \b. a
+lc>
+lc> filter (LEQ 3) (concat L456 L123)
+\z. ((z \f. \x. (f (f (f (f x))))) \z. ((z \f. \x. (f (f (f (f (f x)))))) \z. ((z \f. \x. (f (f (f (f (f (f x))))))) \z. ((z \f. \x. (f (f (f x)))) \a. \b. b))))
+lc> conj L456 3
+\z. ((z \f. \x. (f (f (f (f x))))) \z. ((z \f. \x. (f (f (f (f (f x)))))) \z. ((z \f. \x. (f (f (f (f (f (f x))))))) \z. ((z \f. \x. (f (f (f x)))) \a. \b. b))))
+lc>
+lc> drop 2 L123
+\z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
+lc> cons 3 nil
+\z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
+lc>
+lc> drop-last 4 (concat L123 L456)
+\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc> cons 1 (cons 2 nil)
+\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc> take 2 L123
+\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc>
+lc> take-while (LEQ 2) (reverse L123)
+\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc> cons 3 (cons 2 nil)
+\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc> take-last 2 (map (minus 5) L123)
+\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+lc>
+c> all (LEQ 4) L456      
+\a. \b. a
+lc> any (LEQ 4) L123
+\a. \b. b
+lc>
+lc> index-of (EQ 3) L123 % indexes elements from 1, returns 0 if not found
+\f. \x. (f (f (f x)))
+lc> element-at 1 (remove-at 1 L123)
+\f. \x. (f (f (f x)))
+lc> last-index-of (EQ 4) (repeat 4 3)
+\f. \x. (f (f (f x)))
+lc>
+lc> element-at 1 (zip L123 (range succ 2 3))
+\z. ((z \f. \x. (f (f x))) \f. \x. (f (f (f x))))
+lc> pair 2 3
+\z. ((z \f. \x. (f (f x))) \f. \x. (f (f (f x))))
+lc>
+lc> replace-at 1 0 (remove-at 2 L123)
+\z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
+lc> cons 1 (cons 0 nil)
+\z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
+```
+
