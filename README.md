@@ -27,7 +27,7 @@ y
 ```
 
 ## minilib.lc
-Defines pairs, Booleans, numbers 0-9, lists, and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) (thank the Turing-completeness of lambda calculus). The code below contains extensive usage examples.
+Defines pairs, Booleans, numbers 0-9, two list representations, and operations on them using [Church encoding](https://en.wikipedia.org/wiki/Church_encoding) *(thank the Turing-completeness of lambda calculus)*. The code below contains extensive usage examples.
 
 ### Booleans
 ```
@@ -91,9 +91,18 @@ lc> Cons 2 (Cons 1 NIL)
 ### One-pair lists
 *(cons = pair)*
 ```
+lc> head (cons 2 (cons 3 (cons 4 nil)))
+\f. \x. (f (f x))
+lc> tail (cons 2 (cons 0 (cons 0 nil)))
+\z. ((z \f. \x. x) \z. ((z \f. \x. x) \a. \b. b))
+lc> cons 0 (cons 0 nil)
+\z. ((z \f. \x. x) \z. ((z \f. \x. x) \a. \b. b))
+lc>
 lc> L123 = cons 1 (cons 2 (cons 3 nil)), L456 = cons 4 (cons 5 (cons 6 nil))
 lc> EQ (length L123) (length L456)
 \a. \b. a
+lc> isnil L123
+\a. \b. b
 lc>
 lc> filter (LEQ 3) (concat L456 L123)
 \z. ((z \f. \x. (f (f (f (f x))))) \z. ((z \f. \x. (f (f (f (f (f x)))))) \z. ((z \f. \x. (f (f (f (f (f (f x))))))) \z. ((z \f. \x. (f (f (f x)))) \a. \b. b))))
