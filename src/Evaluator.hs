@@ -29,7 +29,7 @@ isFree x (Abs arg body) = x /= arg && isFree x body
 isFree x (App l r) = isFree x l || isFree x r
 
 reduce :: String -> Term -> Term -> Term
--- | Substitudes a variable everywhere in a term with a different (input) term and returns the result.
+-- | Substitutes a variable everywhere in a term with a different (input) term and returns the result.
 reduce x (Var name) t
     | x == name = t
     | otherwise = Var name
