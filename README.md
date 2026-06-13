@@ -11,7 +11,7 @@ You may now run the interpreter with `./runlc [file]` on Unix and `.\runlc.exe [
 
 ## Syntax
 - A lambda function is denoted with `\` (for $\lambda$) followed by the input, `.` and the function body.
-- Variable names can contain `-`, `_`, letters and/or numbers.
+- Variable names can contain `-`, `_`, letters and/or numbers. Variable names on **output**, however, may also contain `'`.
 - `\x. \y. \z. body` can be written as `\x y z. body`, input arguments must be separated with spaces.
 - All functions as well as function applications treated as input arguments must be wrapped in parentheses (i.e. `\f. (\x. f (x x)) (\x. f (x x))`, not `\f. (\x. f (x x)) \x. f (x x)`).
 - Expressions can contain function calls or assignments, input files must only contain the latter. Expressions can be separated by `,` or `\n`, but a call cannot precede `,`.
