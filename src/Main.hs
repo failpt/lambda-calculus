@@ -23,8 +23,8 @@ unsnoc = foldr (\x -> Just . maybe ([], x) (\(~(a, b)) -> (x : a, b))) Nothing
 
 loadTerm :: String -> Bool -> Venv -> IO (Either String Venv)
 -- | Reads a variable assignment and saves it to the virtual environment if the second 
---  input is False; throws an error if the first input is not an assignment. 
---  If the second input is True, may also read and run a command.
+--  input is True; throws an error if the first input is not an assignment. 
+--  If the second input is False, may also read and run a command.
 loadTerm str isAssignment venv = either (return . Left) loadToks (scan str)
     where
         loadToks [] = return $ Right venv
@@ -41,7 +41,7 @@ loadList (eq : eqs) f venv = do
             either (return . Left) (loadList eqs f) venv'
 
 loop :: Venv -> Either String Venv -> IO ()
--- | Updates a REPL's environment or gives an error and continues a REPL on the old environment.
+-- | Updates a REPL's environment or gives an error and continues the REPL on the old environment.
 loop venv = either (\msg -> putStrLn msg >> repl venv) repl
 
 repl :: Venv -> IO ()
