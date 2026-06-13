@@ -56,108 +56,106 @@ lc> EQ 3 4
 \a. \b. b
 lc>
 lc> 2
-\f. \x. (f (f x))
+\f. \x. f (f x)
 lc> minus 6 4
-\f. \x. (f (f x))
+\f. \x. f (f x)
 lc> mult 2 1
-\f. \x. (f (f x))
+\f. \x. f (f x)
 lc> 
 lc> pred 5
-\f. \x. (f (f (f (f x))))
+\f. \x. f (f (f (f x)))
 lc> plus 3 1
-\f. \x. (f (f (f (f x))))
+\f. \x. f (f (f (f x)))
 lc> div 8 2
-\f. \x. (f (f (f (f x))))
+\f. \x. f (f (f (f x)))
 ```
 ### Scott lists
 ```
 lc> La = Cons 2 (Cons 4 (Cons 3 (Cons 5 NIL))), Lb = Map (minus 6) La
 lc> Head (Tail Lb)
-\f. \x. (f (f x))
-lc> 2
-\f. \x. (f (f x))
+\f. \x. f (f x)
 lc> Head (Map2 plus La Lb)
-\f. \x. (f (f (f (f (f (f x))))))
+\f. \x. f (f (f (f (f (f x)))))
 lc> 6
-\f. \x. (f (f (f (f (f (f x))))))
+\f. \x. f (f (f (f (f (f x)))))
 lc> Lc = (Cons 1 (Cons 3 (Cons 2 NIL))), fold plus 0 Lc
-\f. \x. (f (f (f (f (f (f x))))))
-lc>
+\f. \x. f (f (f (f (f (f x)))))
+lc> 
 lc> Tail (Append (Cons 1 NIL) (Cons 3 (Cons 2 NIL)))
-\n. \c. ((c \f. \x. (f (f x))) \n. \c. ((c \f. f) \n. \c. n))
+\n. \c. c (\f. \x. f (f x)) (\n. \c. c (\f. f) (\n. \c. n))
 lc> Cons 2 (Cons 1 NIL)
-\n. \c. ((c \f. \x. (f (f x))) \n. \c. ((c \f. f) \n. \c. n))
+\n. \c. c (\f. \x. f (f x)) (\n. \c. c (\f. f) (\n. \c. n))
 ```
 ### One-pair lists
 *(cons = pair)*
 ```
 lc> head (cons 2 (cons 3 (cons 4 nil)))
-\f. \x. (f (f x))
+\f. \x. f (f x)
 lc> tail (cons 2 (cons 0 (cons 0 nil)))
-\z. ((z \f. \x. x) \z. ((z \f. \x. x) \a. \b. b))
+\z. z (\f. \x. x) (\z. z (\f. \x. x) (\a. \b. b))
 lc> cons 0 (cons 0 nil)
-\z. ((z \f. \x. x) \z. ((z \f. \x. x) \a. \b. b))
+\z. z (\f. \x. x) (\z. z (\f. \x. x) (\a. \b. b))
 lc>
 lc> L123 = cons 1 (cons 2 (cons 3 nil)), L456 = cons 4 (cons 5 (cons 6 nil))
 lc> EQ (length L123) (length L456)
 \a. \b. a
 lc> isnil L123
 \a. \b. b
-lc>
+lc> 
 lc> filter (LEQ 3) (concat L456 L123)
-\z. ((z \f. \x. (f (f (f (f x))))) \z. ((z \f. \x. (f (f (f (f (f x)))))) \z. ((z \f. \x. (f (f (f (f (f (f x))))))) \z. ((z \f. \x. (f (f (f x)))) \a. \b. b))))
+\z. z (\f. \x. f (f (f (f x)))) (\z. z (\f. \x. f (f (f (f (f x))))) (\z. z (\f. \x. f (f (f (f (f (f x)))))) (\z. z (\f. \x. f (f (f x))) (\a. \b. b))))
 lc> conj L456 3
-\z. ((z \f. \x. (f (f (f (f x))))) \z. ((z \f. \x. (f (f (f (f (f x)))))) \z. ((z \f. \x. (f (f (f (f (f (f x))))))) \z. ((z \f. \x. (f (f (f x)))) \a. \b. b))))
-lc>
+\z. z (\f. \x. f (f (f (f x)))) (\z. z (\f. \x. f (f (f (f (f x))))) (\z. z (\f. \x. f (f (f (f (f (f x)))))) (\z. z (\f. \x. f (f (f x))) (\a. \b. b))))
+lc> 
 lc> drop 2 L123
-\z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
+\z. z (\f. \x. f (f (f x))) (\a. \b. b)
 lc> cons 3 nil
-\z. ((z \f. \x. (f (f (f x)))) \a. \b. b)
+\z. z (\f. \x. f (f (f x))) (\a. \b. b)
 lc>
 lc> drop-while (LEQ 5) (reverse L456)
-\z. ((z \f. \x. (f (f (f (f x))))) \a. \b. b)
+\z. z (\f. \x. f (f (f (f x)))) (\a. \b. b)
 lc> cons 4 nil
-\z. ((z \f. \x. (f (f (f (f x))))) \a. \b. b)
-lc>
+\z. z (\f. \x. f (f (f (f x)))) (\a. \b. b)
+lc> 
 lc> drop-last 4 (concat L123 L456)
-\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+\z. z (\f. f) (\z. z (\f. \x. f (f x)) (\a. \b. b))
 lc> cons 1 (cons 2 nil)
-\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+\z. z (\f. f) (\z. z (\f. \x. f (f x)) (\a. \b. b))
 lc> take 2 L123
-\z. ((z \f. f) \z. ((z \f. \x. (f (f x))) \a. \b. b))
-lc>
+\z. z (\f. f) (\z. z (\f. \x. f (f x)) (\a. \b. b))
+lc> 
 lc> take-while (LEQ 2) (reverse L123)
-\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+\z. z (\f. \x. f (f (f x))) (\z. z (\f. \x. f (f x)) (\a. \b. b))
 lc> cons 3 (cons 2 nil)
-\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
+\z. z (\f. \x. f (f (f x))) (\z. z (\f. \x. f (f x)) (\a. \b. b))
 lc> take-last 2 (map (minus 5) L123)
-\z. ((z \f. \x. (f (f (f x)))) \z. ((z \f. \x. (f (f x))) \a. \b. b))
-lc>
-c> all (LEQ 4) L456      
+\z. z (\f. \x. f (f (f x))) (\z. z (\f. \x. f (f x)) (\a. \b. b))
+lc> 
+lc> all (LEQ 4) L456 
 \a. \b. a
 lc> any (LEQ 4) L123
 \a. \b. b
-lc>
+lc> 
 lc> index-of (EQ 3) L123 % indexes elements from 1, returns 0 if not found
-\f. \x. (f (f (f x)))
+\f. \x. f (f (f x))
 lc> element-at 1 (remove-at 1 L123)
-\f. \x. (f (f (f x)))
+\f. \x. f (f (f x))
 lc> last-index-of (EQ 4) (repeat 4 3)
-\f. \x. (f (f (f x)))
-lc>
+\f. \x. f (f (f x))
+lc> 
 lc> element-at 1 (zip L123 (range succ 2 3))
-\z. ((z \f. \x. (f (f x))) \f. \x. (f (f (f x))))
+\z. z (\f. \x. f (f x)) (\f. \x. f (f (f x)))
 lc> pair 2 3
-\z. ((z \f. \x. (f (f x))) \f. \x. (f (f (f x))))
-lc>
+\z. z (\f. \x. f (f x)) (\f. \x. f (f (f x)))
+lc> 
 lc> replace-at 1 0 (remove-at 2 L123)
-\z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
+\z. z (\f. f) (\z. z (\f. \x. x) (\a. \b. b))
 lc> cons 1 (cons 0 nil)
-\z. ((z \f. f) \z. ((z \f. \x. x) \a. \b. b))
-lc>
+\z. z (\f. f) (\z. z (\f. \x. x) (\a. \b. b))
+lc> 
 lc> L210 = map (minus 3) L123
 lc> lfold plus 0 L210
-\f. \x. (f (f (f x)))
+\f. \x. f (f (f x))
 lc> rfold plus 0 L210
-\f. \x. (f (f (f x)))
+\f. \x. f (f (f x))
 ```
