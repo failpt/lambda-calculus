@@ -35,7 +35,7 @@ reduce x (Var name) t
     | otherwise = Var name
 reduce x (Abs arg body) t
     | x == arg = Abs arg body
-    | isFree arg t = let arg' = arg ++ "'" in Abs arg' $ reduce arg (reduce arg body $ Var arg') t  
+    | isFree arg t = let arg' = arg ++ "'" in Abs arg' $ reduce x (reduce arg body $ Var arg') t  
     | otherwise = Abs arg $ reduce x body t
 reduce x (App l r) t = App (reduce x l t) (reduce x r t)
 
