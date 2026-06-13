@@ -41,6 +41,7 @@ loadList (eq : eqs) f venv = do
             either (return . Left) (loadList eqs f) res
 
 loop :: Venv -> Either String Venv -> IO ()
+-- | Updates a REPL's environment or gives an error and continues a REPL on the old environment.
 loop venv = either (\msg -> putStrLn msg >> repl venv) repl
 
 repl :: Venv -> IO ()
