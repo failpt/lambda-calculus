@@ -22,9 +22,9 @@ unsnoc :: [a] -> Maybe ([a], a)
 unsnoc = foldr (\x -> Just . maybe ([], x) (\(~(a, b)) -> (x : a, b))) Nothing
 
 loadTerm :: String -> Bool -> Venv -> IO (Either String Venv)
--- | Reads a variable assignment and saves it to the virtual environment if the third 
---  input is False; throws an error if the second input is not an assignment. 
---  If the third input is True, may also read and run a command.
+-- | Reads a variable assignment and saves it to the virtual environment if the second 
+--  input is False; throws an error if the first input is not an assignment. 
+--  If the second input is True, may also read and run a command.
 loadTerm str isAssignment venv = either (return . Left) loadToks (scan str)
     where
         loadToks [] = return $ Right venv
