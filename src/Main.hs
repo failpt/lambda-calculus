@@ -37,8 +37,8 @@ loadList :: [String] -> String -> Venv -> IO (Either String Venv)
 -- | Reads a list of assignments followed by a single application and saves it to the virtual environment.
 loadList [] f venv = loadTerm f False venv
 loadList (eq : eqs) f venv = do
-            res <- loadTerm eq True venv
-            either (return . Left) (loadList eqs f) res
+            venv' <- loadTerm eq True venv
+            either (return . Left) (loadList eqs f) venv'
 
 loop :: Venv -> Either String Venv -> IO ()
 -- | Updates a REPL's environment or gives an error and continues a REPL on the old environment.

@@ -54,8 +54,8 @@ parseNode _ = Left "Missing variables."
 
 leftRecurse :: Term -> [Token] -> Either String (Term, [Token])
 -- | Left-associatively parses function applications.
-leftRecurse t1 toks = case toks of
+leftRecurse l toks = case toks of
     (Name n : _) -> go
     (LParen : _) -> go
-    _ -> Right (t1, toks)
-    where go = parseNode toks >>= \(t2, rest') -> leftRecurse (App t1 t2) rest'
+    _ -> Right (l, toks)
+    where go = parseNode toks >>= \(r, rest') -> leftRecurse (App l r) rest'
