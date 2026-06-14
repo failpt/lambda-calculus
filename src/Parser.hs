@@ -27,7 +27,7 @@ scan (c : cs)
     | c == '=' = (Eq:) <$> scan cs
     | c == '%' = Right []
     | otherwise = Left $ "Unknown input symbol: " ++ c : "."
-    where isName c = isAlphaNum c || c == '-' || c == '_'
+    where isName c = isAlphaNum c || elem c ['_', '-', '\'']
 
 parseTerm :: [Token] -> Either String (Term, [Token])
 -- | Parses a lambda calculus term.
